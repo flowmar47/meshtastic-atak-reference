@@ -5,7 +5,7 @@ A single-file, **searchable, offline-capable** cheat-sheet for configuring and u
 talking — so a team shares positions and chat over LoRa with no cell signal, no internet,
 and no fees.
 
-**Live:** _(Vercel link added after deploy)_
+**Live:** https://meshtastic-atak-reference.vercel.app
 
 ## Features
 
