@@ -4,12 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Meshtastic × ATAK — Field Reference</title>
-<!-- Fonts load when online; robust system fallbacks keep it readable fully offline. -->
+<meta name="description" content="Searchable, offline-capable cheat-sheet for Meshtastic LoRa radios, ATAK, and getting the two working together in the field.">
+<meta name="theme-color" content="#D4A88A">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<meta property="og:title" content="Meshtastic × ATAK — Field Reference">
+<meta property="og:description" content="Plain-language guide for off-grid mesh messaging and team map sharing. Works fully offline.">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* ── Silo "Editorial Dark" tokens (embedded for offline portability) ── */
   :root {
     --bg:#0B0907; --surface:#100D09; --ink-2:#16120D; --ink-3:#1E1913;
     --fg:#ECE4D2; --muted:#C9C0AC; --paper-3:#948A77; --paper-4:#5E574A;
@@ -18,10 +23,11 @@
     --font-display:"Instrument Serif", Georgia, serif;
     --font-body:"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
     --font-mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-    --radius:0px; --transition-fast:150ms cubic-bezier(0.4,0,0.2,1);
+    --transition-fast:150ms cubic-bezier(0.4,0,0.2,1);
+    --sticky-top:0px;
   }
   *,*::before,*::after { box-sizing:border-box; }
-  html { scroll-behavior:smooth; }
+  html { scroll-behavior:smooth; scroll-padding-top:120px; }
   body {
     background:var(--bg); color:var(--fg); font-family:var(--font-body);
     margin:0; font-weight:300; line-height:1.6;
@@ -32,8 +38,8 @@
   :focus-visible { outline:1px solid var(--accent); outline-offset:3px; }
   a { color:var(--accent); text-decoration:underline; text-underline-offset:3px; }
   .kicker { font-family:var(--font-mono); font-size:0.62rem; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:var(--paper-3); }
+  .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
 
-  /* ── Layout ── */
   .wrap { max-width:920px; margin:0 auto; padding:0 24px 96px; }
 
   header.hero { border-bottom:1px solid var(--border); padding:48px 0 32px; }
@@ -42,11 +48,45 @@
   .hero h1 .x { color:var(--accent); font-style:normal; padding:0 .1em; }
   .hero p.sub { color:var(--muted); max-width:62ch; margin:14px 0 0; font-size:0.98rem; }
   .hero .meta { margin-top:18px; display:flex; gap:18px; flex-wrap:wrap; align-items:center; }
+  .hero .stats { display:flex; gap:20px; flex-wrap:wrap; margin-top:24px; padding-top:20px; border-top:1px solid var(--border); }
+  .stat { display:flex; flex-direction:column; gap:2px; }
+  .stat .n { font-family:var(--font-display); font-size:1.8rem; font-style:italic; color:var(--accent); line-height:1; }
+  .stat .l { font-family:var(--font-mono); font-size:0.58rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--paper-3); }
   .pulse { display:inline-flex; align-items:center; gap:8px; }
   .dot { width:7px; height:7px; border-radius:50%; background:var(--success); box-shadow:0 0 6px var(--success); }
 
-  /* ── Search bar (sticky) ── */
-  .search-zone { position:sticky; top:0; z-index:20; background:var(--bg); border-bottom:1px solid var(--border); padding:16px 0; }
+  .quick-start { background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--accent); padding:24px; margin-bottom:32px; }
+  .quick-start h2 { font-size:1.5rem; margin-bottom:6px; }
+  .quick-start > p { color:var(--muted); font-size:0.92rem; margin:0 0 18px; }
+  .steps { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
+  .steps li { display:flex; gap:14px; align-items:flex-start; padding:12px 14px; background:var(--ink-2); border:1px solid var(--border); }
+  .steps .num { flex:0 0 auto; font-family:var(--font-mono); font-size:0.7rem; font-weight:600; color:var(--bg); background:var(--accent); width:24px; height:24px; display:flex; align-items:center; justify-content:center; }
+  .steps .text { flex:1; font-size:0.9rem; color:var(--muted); line-height:1.5; }
+  .steps .text strong { color:var(--fg); font-weight:500; }
+  .steps .jump { flex:0 0 auto; font-family:var(--font-mono); font-size:0.58rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent); background:transparent; border:1px solid var(--border); padding:4px 8px; cursor:pointer; transition:all var(--transition-fast); white-space:nowrap; }
+  .steps .jump:hover { border-color:var(--accent); }
+
+  .checklist { background:var(--surface); border:1px solid var(--border); padding:24px; margin-bottom:32px; }
+  .checklist h2 { font-size:1.5rem; margin-bottom:6px; }
+  .checklist > p { color:var(--muted); font-size:0.92rem; margin:0 0 16px; }
+  .check-items { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+  .check-items li { display:flex; gap:12px; align-items:flex-start; padding:10px 12px; background:var(--ink-2); border:1px solid var(--border); cursor:pointer; transition:border-color var(--transition-fast); }
+  .check-items li:hover { border-color:var(--rule-strong); }
+  .check-items li.done { opacity:0.55; }
+  .check-items li.done .check-label { text-decoration:line-through; }
+  .check-items input { margin-top:3px; accent-color:var(--accent); width:16px; height:16px; cursor:pointer; flex:0 0 auto; }
+  .check-label { font-size:0.9rem; color:var(--muted); }
+  .check-label strong { color:var(--fg); font-weight:500; }
+  .check-progress { margin-top:14px; font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--paper-3); }
+
+  .toc { margin-bottom:32px; }
+  .toc h2 { font-size:1.3rem; margin-bottom:12px; }
+  .toc-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:8px; }
+  .toc-link { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:10px 12px; background:var(--ink-2); border:1px solid var(--border); color:var(--muted); font-size:0.86rem; text-decoration:none; transition:all var(--transition-fast); }
+  .toc-link:hover { border-color:var(--accent); color:var(--fg); }
+  .toc-link .cnt { font-family:var(--font-mono); font-size:0.62rem; color:var(--paper-3); }
+
+  .search-zone { position:sticky; top:var(--sticky-top); z-index:20; background:var(--bg); border-bottom:1px solid var(--border); padding:16px 0; }
   .search-inner { max-width:920px; margin:0 auto; padding:0 24px; }
   .search-box { display:flex; align-items:center; gap:12px; background:var(--ink-2); border:1px solid var(--rule-strong); padding:14px 16px; transition:border-color var(--transition-fast), box-shadow var(--transition-fast); }
   .search-box:focus-within { border-color:var(--accent); box-shadow:0 0 10px rgba(212,168,138,0.25); }
@@ -54,10 +94,14 @@
   .search-box input { flex:1; background:transparent; border:0; outline:0; color:var(--fg); font-family:var(--font-mono); font-size:0.95rem; letter-spacing:0.01em; }
   .search-box input::placeholder { color:var(--paper-4); }
   .search-box .kbd { font-family:var(--font-mono); font-size:0.62rem; color:var(--paper-3); border:1px solid var(--border); padding:2px 6px; }
-  .search-box .clear { cursor:pointer; color:var(--paper-3); font-family:var(--font-mono); font-size:0.9rem; padding:2px 6px; display:none; }
+  .search-box .clear { cursor:pointer; color:var(--paper-3); font-family:var(--font-mono); font-size:0.9rem; padding:2px 6px; display:none; background:none; border:0; }
   .search-box .clear:hover { color:var(--vermilion); }
 
-  /* ── Category chips ── */
+  .toolbar { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; align-items:center; }
+  .toolbar button { font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); background:var(--ink-2); border:1px solid var(--border); padding:6px 10px; cursor:pointer; transition:all var(--transition-fast); }
+  .toolbar button:hover { border-color:var(--paper-3); color:var(--fg); }
+  .toolbar .hint { margin-left:auto; font-family:var(--font-mono); font-size:0.6rem; color:var(--paper-4); }
+
   .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
   .chip { font-family:var(--font-mono); font-size:0.66rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); background:var(--ink-2); border:1px solid var(--border); padding:6px 11px; cursor:pointer; transition:all var(--transition-fast); }
   .chip:hover { border-color:var(--paper-3); color:var(--fg); }
@@ -67,10 +111,14 @@
 
   .count { margin:22px 0 12px; font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--paper-3); }
 
-  /* ── Entry cards (accordion) ── */
-  .entry { background:var(--surface); border:1px solid var(--border); border-left:2px solid transparent; margin-bottom:10px; transition:border-color var(--transition-fast); }
+  .section-head { margin:36px 0 14px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+  .section-head h2 { font-size:1.6rem; }
+  .section-head p { margin:6px 0 0; color:var(--paper-3); font-size:0.88rem; }
+
+  .entry { background:var(--surface); border:1px solid var(--border); border-left:2px solid transparent; margin-bottom:10px; transition:border-color var(--transition-fast); scroll-margin-top:120px; }
   .entry:hover { border-left-color:var(--rule-strong); }
   .entry.open { border-left-color:var(--accent); }
+  .entry:target { border-left-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
   .entry-head { display:flex; align-items:flex-start; gap:14px; padding:18px 20px; cursor:pointer; user-select:none; }
   .entry-head .q { flex:1; font-size:1.04rem; font-weight:400; color:var(--fg); line-height:1.4; }
   .entry-head .cat { flex:0 0 auto; font-family:var(--font-mono); font-size:0.55rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--paper-3); border:1px solid var(--border); padding:3px 7px; margin-top:2px; white-space:nowrap; }
@@ -81,23 +129,55 @@
   .entry-body p { margin:0 0 14px; color:var(--muted); font-size:0.96rem; }
   .entry-body p:last-child { margin-bottom:0; }
   .entry-body strong { color:var(--fg); font-weight:500; }
+  .entry-body ul { margin:0 0 14px; padding-left:1.2em; color:var(--muted); font-size:0.94rem; }
+  .entry-body li { margin-bottom:6px; }
 
-  /* ── CLI command block ── */
-  .cmd { position:relative; background:var(--bg); border:1px solid var(--rule-strong); padding:12px 14px; margin:4px 0 14px; font-family:var(--font-mono); font-size:0.85rem; color:var(--fg); overflow-x:auto; }
+  .cmd { position:relative; background:var(--bg); border:1px solid var(--rule-strong); padding:12px 14px; margin:4px 0 14px; font-family:var(--font-mono); font-size:0.85rem; color:var(--fg); overflow-x:auto; white-space:pre-wrap; }
   .cmd::before { content:"$"; color:var(--accent); margin-right:10px; user-select:none; }
   .cmd .copy { position:absolute; top:8px; right:8px; background:var(--ink-2); border:1px solid var(--border); color:var(--paper-3); font-family:var(--font-mono); font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; padding:4px 8px; cursor:pointer; transition:all var(--transition-fast); }
   .cmd .copy:hover { border-color:var(--accent); color:var(--accent); }
   .cmd .copy.done { color:var(--success); border-color:var(--success); }
   .note { border-left:2px solid var(--paper-4); padding:8px 0 8px 14px; margin:0 0 14px; color:var(--paper-3); font-size:0.84rem; font-style:italic; }
+  .related { margin-top:14px; padding-top:12px; border-top:1px solid var(--border); font-size:0.82rem; color:var(--paper-3); }
+  .related a { font-family:var(--font-mono); font-size:0.72rem; margin-right:10px; }
 
-  mark { background:var(--accent); color:var(--bg); padding:0 2px; border-radius:0; }
+  mark { background:var(--accent); color:var(--bg); padding:0 2px; }
 
   .empty { text-align:center; padding:64px 20px; color:var(--paper-3); }
   .empty h3 { font-size:1.6rem; color:var(--muted); margin-bottom:8px; }
 
+  .shortcuts-panel { display:none; position:fixed; inset:0; z-index:50; background:rgba(11,9,7,0.85); align-items:center; justify-content:center; padding:24px; }
+  .shortcuts-panel.open { display:flex; }
+  .shortcuts-box { background:var(--surface); border:1px solid var(--rule-strong); max-width:420px; width:100%; padding:28px; }
+  .shortcuts-box h3 { font-size:1.4rem; margin-bottom:16px; }
+  .shortcuts-box table { width:100%; font-size:0.88rem; border-collapse:collapse; }
+  .shortcuts-box td { padding:8px 0; border-bottom:1px solid var(--border); color:var(--muted); }
+  .shortcuts-box td:last-child { text-align:right; }
+  .shortcuts-box kbd { font-family:var(--font-mono); font-size:0.72rem; background:var(--ink-2); border:1px solid var(--border); padding:2px 7px; color:var(--fg); }
+  .shortcuts-close { margin-top:18px; width:100%; font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; background:var(--accent); color:var(--bg); border:0; padding:10px; cursor:pointer; font-weight:500; }
+
   footer { border-top:1px solid var(--border); margin-top:48px; padding-top:28px; color:var(--paper-4); font-size:0.82rem; }
   footer a { color:var(--paper-3); }
   footer .src { margin-top:10px; font-family:var(--font-mono); font-size:0.72rem; line-height:1.9; }
+  footer .install-hint { margin-top:14px; padding:12px 14px; background:var(--ink-2); border:1px solid var(--border); font-size:0.84rem; color:var(--muted); }
+  footer .install-hint button { margin-top:8px; font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; background:transparent; border:1px solid var(--border); color:var(--accent); padding:6px 10px; cursor:pointer; }
+  footer .install-hint button:hover { border-color:var(--accent); }
+
+  @media (max-width:600px) {
+    .entry-head .cat { display:none; }
+    .toolbar .hint { width:100%; margin-left:0; margin-top:4px; }
+    .steps li { flex-wrap:wrap; }
+    .steps .jump { width:100%; text-align:center; margin-top:4px; }
+  }
+
+  @media print {
+    .search-zone, .toolbar, .chips, .quick-start, .checklist, .toc, footer .install-hint, .shortcuts-panel { display:none !important; }
+    body { background:#fff; color:#000; }
+    .entry { break-inside:avoid; border:1px solid #ccc; }
+    .entry-body { display:block !important; }
+    .entry-head .chev { display:none; }
+    .cmd .copy { display:none; }
+  }
 </style>
 </head>
 <body>
@@ -109,183 +189,443 @@
     <p class="sub">A plain-language, searchable cheat-sheet for setting up Meshtastic radios, the ATAK app, and getting the two talking — so your team shares positions and chat over LoRa with no cell signal, no internet, and no fees.</p>
     <div class="meta">
       <span class="pulse"><span class="dot"></span><span class="kicker" style="color:var(--success);">Works fully offline</span></span>
-      <span class="kicker">Press <strong style="color:var(--fg);">/</strong> to search</span>
+      <span class="kicker">Press <strong style="color:var(--fg);">/</strong> to search · <strong style="color:var(--fg);">?</strong> for shortcuts</span>
     </div>
+    <div class="stats" id="stats"></div>
   </div>
 </header>
 
-<div class="search-zone">
+<div class="search-zone" id="search-zone">
   <div class="search-inner">
     <div class="search-box">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input id="search" type="text" placeholder="Search questions, settings, commands… (e.g. region, channel, ATAK, bluetooth)" autocomplete="off" spellcheck="false">
-      <span class="clear" id="clear" title="Clear (Esc)">✕</span>
-      <span class="kbd">/</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <label for="search" class="sr-only">Search knowledge base</label>
+      <input id="search" type="search" placeholder="Search questions, settings, commands… (e.g. region, channel, ATAK, bluetooth)" autocomplete="off" spellcheck="false">
+      <button class="clear" id="clear" type="button" title="Clear (Esc)" aria-label="Clear search">✕</button>
+      <span class="kbd" aria-hidden="true">/</span>
     </div>
-    <div class="chips" id="chips"></div>
+    <div class="toolbar">
+      <button type="button" id="expand-all">Expand all</button>
+      <button type="button" id="collapse-all">Collapse all</button>
+      <button type="button" id="show-toc">Jump to topics</button>
+      <span class="hint">↑↓ navigate · Enter toggle · ? shortcuts</span>
+    </div>
+    <div class="chips" id="chips" role="toolbar" aria-label="Filter by category"></div>
   </div>
 </div>
 
 <div class="wrap">
-  <div class="count" id="count"></div>
+  <section class="quick-start" id="quick-start" aria-labelledby="qs-title">
+    <h2 id="qs-title">Quick start — first hour</h2>
+    <p>Follow these five steps in order. Each links to the detailed entry below.</p>
+    <ol class="steps" id="quick-steps"></ol>
+  </section>
+
+  <section class="checklist" id="field-checklist" aria-labelledby="fc-title">
+    <h2 id="fc-title">Pre-field checklist</h2>
+    <p>Tick items off before you leave coverage. Progress is saved in your browser.</p>
+    <ul class="check-items" id="check-items"></ul>
+    <div class="check-progress" id="check-progress"></div>
+  </section>
+
+  <nav class="toc" id="toc" aria-labelledby="toc-title">
+    <h2 id="toc-title">Browse by topic</h2>
+    <div class="toc-grid" id="toc-grid"></div>
+  </nav>
+
+  <div class="count" id="count" aria-live="polite"></div>
   <div id="results"></div>
 
   <footer>
-    <div>Built offline · open this file in any browser, no server or internet needed. Content is written for newcomers and verified against the official docs, but firmware and app versions change — spot-check version-sensitive commands for your build.</div>
+    <div>Built for the field — open this page in any browser with no server required. Content is written for newcomers and verified against official docs, but firmware and app versions change; spot-check version-sensitive steps for your build.</div>
     <div class="src">
       Sources ·
       <a href="https://meshtastic.org/docs/" target="_blank" rel="noopener">meshtastic.org/docs</a> ·
       <a href="https://meshtastic.org/docs/software/integrations/integrations-atak-plugin/" target="_blank" rel="noopener">ATAK Plugin</a> ·
       <a href="https://meshtastic.org/docs/configuration/radio/lora/" target="_blank" rel="noopener">LoRa config</a> ·
+      <a href="https://meshtastic.org/docs/hardware/devices/" target="_blank" rel="noopener">Hardware</a> ·
       <a href="https://www.tak.gov/" target="_blank" rel="noopener">tak.gov</a>
+    </div>
+    <div class="install-hint" id="install-hint" hidden>
+      Install this reference on your device for offline access in the field.
+      <button type="button" id="install-btn">Add to home screen</button>
     </div>
   </footer>
 </div>
 
+<div class="shortcuts-panel" id="shortcuts-panel" role="dialog" aria-labelledby="sc-title" aria-modal="true">
+  <div class="shortcuts-box">
+    <h3 id="sc-title">Keyboard shortcuts</h3>
+    <table>
+      <tr><td>Focus search</td><td><kbd>/</kbd></td></tr>
+      <tr><td>Clear search / close</td><td><kbd>Esc</kbd></td></tr>
+      <tr><td>Next entry</td><td><kbd>↓</kbd> or <kbd>j</kbd></td></tr>
+      <tr><td>Previous entry</td><td><kbd>↑</kbd> or <kbd>k</kbd></td></tr>
+      <tr><td>Toggle entry</td><td><kbd>Enter</kbd></td></tr>
+      <tr><td>This help</td><td><kbd>?</kbd></td></tr>
+    </table>
+    <button class="shortcuts-close" type="button" id="shortcuts-close">Close</button>
+  </div>
+</div>
+
 <script>
-/* ─────────────────────────────────────────────────────────────
-   Content data. Each entry: { cat, q, a (HTML-safe text w/ **bold**),
-   cmd? (CLI snippet), note? (caveat). Plain language, verified facts.
-   ───────────────────────────────────────────────────────────── */
-const CATS = ["Basics","Meshtastic Setup","Channels & Privacy","Messaging & Location","ATAK Basics","Meshtastic + ATAK","Troubleshooting"];
+const CATS = [
+  "Basics",
+  "Hardware",
+  "Meshtastic Setup",
+  "Channels & Privacy",
+  "Messaging & Location",
+  "ATAK Basics",
+  "Meshtastic + ATAK",
+  "Field Operations",
+  "Troubleshooting",
+  "Glossary"
+];
+
+const CAT_DESC = {
+  "Basics": "What these tools are and why they pair well.",
+  "Hardware": "Radios, antennas, and what to buy for your region.",
+  "Meshtastic Setup": "Firmware, region, roles, and first connection.",
+  "Channels & Privacy": "Shared rooms, encryption, and modem presets.",
+  "Messaging & Location": "Text, GPS, range, and battery life.",
+  "ATAK Basics": "Installing ATAK and offline maps.",
+  "Meshtastic + ATAK": "Plugin setup, roles, and iOS path.",
+  "Field Operations": "Checklists, power, and real-world deployment.",
+  "Troubleshooting": "When something doesn't work.",
+  "Glossary": "Terms you'll see in docs and the field."
+};
+
+const QUICK_START = [
+  { step: "Flash firmware & set your region", id: "set-region" },
+  { step: "Join the same channel as your team (scan a QR)", id: "share-channel" },
+  { step: "Confirm plain text messaging works between two nodes", id: "send-text" },
+  { step: "Set device role to TAK & install the ATAK plugin", id: "connect-atak-android" },
+  { step: "Verify green Meshtastic icon & positions on the ATAK map", id: "atak-icon-colour" }
+];
+
+const FIELD_CHECKLIST = [
+  "Region set and radio rebooted",
+  "Everyone on the same channel (shared QR scanned)",
+  "Modem preset matches across the team",
+  "Antennas attached on every node",
+  "Meshtastic app paired and showing other nodes",
+  "ATAK callsign / team colour set",
+  "Offline map tiles downloaded for the area",
+  "ATAK plugin version matches ATAK build",
+  "Power banks or spare batteries packed",
+  "Test message sent and position visible on a teammate's map"
+];
 
 const ENTRIES = [
   // ── Basics ──
-  { cat:"Basics", q:"What is Meshtastic?",
+  { id:"what-is-meshtastic", cat:"Basics", tags:["intro","lora"], related:["what-is-lora","why-combine"],
+    q:"What is Meshtastic?",
     a:"Meshtastic is free, open-source software that turns small **LoRa radios** into an off-grid text-messaging and GPS network. Devices relay messages for each other (a \"mesh\"), so you can chat and share locations with **no cell signal, no internet, and no monthly fees**. Range is typically hundreds of metres in town and many kilometres with height and clear line of sight." },
-  { cat:"Basics", q:"What is ATAK / CivTAK?",
+  { id:"what-is-lora", cat:"Basics", tags:["intro","lora"], related:["what-is-meshtastic","range-expectations"],
+    q:"What is LoRa, in plain terms?",
+    a:"**LoRa** (Long Range) is a low-power radio technology designed to send small packets of data a long way on licence-free bands. It is slow compared to Wi-Fi or LTE, but it sips battery and punches through obstacles better than you'd expect. Meshtastic uses LoRa as the physical layer and builds a mesh network on top." },
+  { id:"what-is-atak", cat:"Basics", tags:["intro","atak"], related:["cot-marker","offline-maps"],
+    q:"What is ATAK / CivTAK?",
     a:"**ATAK** (Android Team Awareness Kit) is a free mapping and situational-awareness app for Android. The civilian build is called **ATAK-CIV** (a.k.a. CivTAK) and is on the Google Play Store. It shows everyone on your team as markers on a shared map, with chat, and works with offline maps in the field." },
-  { cat:"Basics", q:"Why combine Meshtastic and ATAK?",
+  { id:"why-combine", cat:"Basics", tags:["intro","atak","lora"], related:["integration-how","what-is-atak"],
+    q:"Why combine Meshtastic and ATAK?",
     a:"On its own, ATAK needs the internet or a dedicated TAK server to share positions between people. **Meshtastic carries ATAK's position and chat messages over LoRa radio instead**, so your whole team sees each other live on the ATAK map with zero infrastructure — no cell towers, no Wi-Fi, no server." },
-  { cat:"Basics", q:"What hardware and apps do I need?",
+  { id:"what-you-need", cat:"Basics", tags:["intro","hardware"], related:["hardware-picks","install-atak"],
+    q:"What hardware and apps do I need?",
     a:"You need: (1) a **Meshtastic LoRa device** for your region — popular ones are the Heltec V3, LILYGO T-Beam, or RAK WisBlock; (2) the **Meshtastic app** (Android or iOS) to control it; and for the ATAK side, (3) an **Android phone with ATAK-CIV**. Each person on the team needs their own radio + phone." },
-  { cat:"Basics", q:"Do I need a licence, SIM card, or subscription?",
+  { id:"licence-fees", cat:"Basics", tags:["intro","legal"], related:["ham-mode"],
+    q:"Do I need a licence, SIM card, or subscription?",
     a:"No. Meshtastic uses **licence-free ISM radio bands**, so there's no SIM, no carrier, and no fee. There is an optional Ham-radio mode for licensed operators who want higher transmit power, but the default needs no licence at all." },
+  { id:"mesh-how", cat:"Basics", tags:["intro","mesh"], related:["hop-limit","router-role"],
+    q:"How does the mesh relay work?",
+    a:"When your message can't reach someone directly, **intermediate nodes re-broadcast it** (store-and-forward). Each hop adds a little delay and uses airtime. The default **hop limit is 3** (max 7). More routers placed high up = a bigger, more reliable network — but too many chatty nodes can congest the channel." },
+
+  // ── Hardware ──
+  { id:"hardware-picks", cat:"Hardware", tags:["hardware","buying"], related:["antenna-basics","what-you-need"],
+    q:"Which radio should I buy?",
+    a:"Popular, well-supported boards include the **Heltec WiFi LoRa 32 V3**, **LILYGO T-Beam** (built-in GPS), and **RAK WisBlock** modular kits. Pick a board with the **correct frequency for your country** (868 MHz EU, 915 MHz US/AU, etc.). GPS is strongly recommended for ATAK use.",
+    note:"Check meshtastic.org/docs/hardware/devices/ for the latest supported board list." },
+  { id:"antenna-basics", cat:"Hardware", tags:["hardware","range"], related:["range-expectations","no-nodes"],
+    q:"Antenna basics — what actually matters?",
+    a:"**Never transmit without an antenna attached** — you can damage the radio. A **quarter-wave whip** that matches your band is the minimum. Higher gain antennas reach further but are more directional. Elevation beats everything: a node on a hill or rooftop will outperform a handheld every time." },
+  { id:"usb-cables", cat:"Hardware", tags:["hardware","usb"], related:["mac-usb"],
+    q:"USB cables and drivers — common gotchas",
+    a:"Many boards ship with **charge-only USB cables** that won't flash firmware. Use a known data cable. Boards use **CP210x**, **CH9102**, or **CH34x** USB-serial chips — macOS and Windows often need a driver. Linux usually works out of the box." },
+  { id:"power-options", cat:"Hardware", tags:["hardware","power"], related:["battery-life","solar-router"],
+    q:"How do people power nodes in the field?",
+    a:"Handheld setups use **18650 cells** (T-Beam) or USB power banks. Fixed relay nodes often run on **solar + LiPo** or mains USB. Match your power budget to the role — a ROUTER that never sleeps needs a lot more juice than a CLIENT phone-paired node." },
 
   // ── Meshtastic Setup ──
-  { cat:"Meshtastic Setup", q:"How do I install or update the firmware on my device?",
+  { id:"flash-firmware", cat:"Meshtastic Setup", tags:["setup","firmware"], related:["set-region","ota-update"],
+    q:"How do I install or update the firmware on my device?",
     a:"The easiest way is the official **web flasher** — open **flasher.meshtastic.org** in Chrome or Edge, plug the device in over USB, pick your board, and click flash. Everything runs in the browser. You can also update over the air later with the CLI.",
     cmd:"meshtastic --ota-update" },
-  { cat:"Meshtastic Setup", q:"How do I set my region? (do this first!)",
+  { id:"set-region", cat:"Meshtastic Setup", tags:["setup","region"], related:["wont-transmit","flash-firmware"],
+    q:"How do I set my region? (do this first!)",
     a:"Your radio **will not transmit until you set the region** — this keeps it on the legal frequency for your country. Set it once, then reboot. Common values: **US**, **EU_868**, **EU_433**, **ANZ** (Australia/NZ), plus many others like JP, KR, IN, BR_902.",
     cmd:"meshtastic --set lora.region US" },
-  { cat:"Meshtastic Setup", q:"How do I connect to my node — USB, Bluetooth, or Wi-Fi?",
+  { id:"connect-node", cat:"Meshtastic Setup", tags:["setup","connection"], related:["node-info","bluetooth-issues"],
+    q:"How do I connect to my node — USB, Bluetooth, or Wi-Fi?",
     a:"Three ways. **USB** (serial) is auto-detected by the CLI. **Bluetooth** pairs with the phone app, or scan from the CLI. **Wi-Fi/TCP** connects over your network if the node is Wi-Fi enabled. The phone app uses Bluetooth or Wi-Fi.",
     cmd:"meshtastic --info            # USB, auto-detect\nmeshtastic --ble-scan        # find Bluetooth devices\nmeshtastic --host 192.168.1.50 --info   # over Wi-Fi" },
-  { cat:"Meshtastic Setup", q:"How do I see my node's settings and who else is on the mesh?",
+  { id:"node-info", cat:"Meshtastic Setup", tags:["setup"], related:["connect-node","list-nodes"],
+    q:"How do I see my node's settings and who else is on the mesh?",
     a:"`--info` prints your node's configuration, channels, and radio settings. `--nodes` shows a table of every device your node currently knows about, with names, signal, and last-heard time.",
     cmd:"meshtastic --info\nmeshtastic --nodes" },
-  { cat:"Meshtastic Setup", q:"What are device roles, and which should I pick?",
+  { id:"device-roles", cat:"Meshtastic Setup", tags:["setup","roles"], related:["tak-vs-tracker","router-role"],
+    q:"What are device roles, and which should I pick?",
     a:"The **role** tells the node how to behave. **CLIENT** (the default) is right for almost everyone — normal send/receive. **ROUTER** / **REPEATER** are for fixed, mains- or solar-powered nodes placed high up to extend range; don't set these on a phone-carried node. **TAK** and **TAK_TRACKER** are special roles for ATAK (see that section).",
     note:"Rule of thumb: leave it on CLIENT unless you're deliberately building infrastructure." },
-  { cat:"Meshtastic Setup", q:"How do I give my node a name?",
+  { id:"set-name", cat:"Meshtastic Setup", tags:["setup"], related:["node-info"],
+    q:"How do I give my node a name?",
     a:"Set a long name and a short name (the short one shows on tiny screens and map labels). This is how you appear to everyone else on the mesh.",
     cmd:"meshtastic --set-owner \"Alice\" --set-owner-short \"ALC\"" },
+  { id:"wifi-setup", cat:"Meshtastic Setup", tags:["setup","wifi"], related:["connect-node"],
+    q:"How do I enable Wi-Fi on my node?",
+    a:"Wi-Fi lets you manage the node over TCP (handy at home base). Set SSID and password, then connect via `--host`. Not required for ATAK in the field — Bluetooth is the usual phone link.",
+    cmd:"meshtastic --set network.wifi_ssid \"MyNetwork\"\nmeshtastic --set network.wifi_psk \"password\"\nmeshtastic --set network.enabled true" },
+  { id:"ota-update", cat:"Meshtastic Setup", tags:["setup","firmware"], related:["flash-firmware"],
+    q:"How do I update firmware over the air (OTA)?",
+    a:"Once your node is on a recent firmware, you can push updates without USB. The node downloads the build and reboots. Keep phones/nodes on reasonably current firmware for ATAK plugin compatibility.",
+    cmd:"meshtastic --ota-update" },
+  { id:"factory-reset", cat:"Meshtastic Setup", tags:["setup"], related:["set-region"],
+    q:"How do I factory-reset a node?",
+    a:"If a node is misconfigured beyond repair, reset it to defaults and start fresh. You'll need to set region and re-join channels afterward.",
+    cmd:"meshtastic --factory-reset" },
 
   // ── Channels & Privacy ──
-  { cat:"Channels & Privacy", q:"What is a channel?",
+  { id:"what-is-channel", cat:"Channels & Privacy", tags:["channels"], related:["encryption","share-channel"],
+    q:"What is a channel?",
     a:"A channel is a shared radio \"room\". Only nodes on the **same channel** — same name and same key — can hear each other. New devices start on the default public channel called **LongFast**. You can add private channels alongside it." },
-  { cat:"Channels & Privacy", q:"Are my messages encrypted?",
+  { id:"encryption", cat:"Channels & Privacy", tags:["channels","security"], related:["private-channel","what-is-channel"],
+    q:"Are my messages encrypted?",
     a:"Yes — every channel is **AES-encrypted with a pre-shared key (PSK)**. But the default \"LongFast\" channel uses a **well-known public key**, so treat it as public. For real privacy, create your own channel with a fresh random key and share it only with your team." },
-  { cat:"Channels & Privacy", q:"How do I share a channel with my team?",
+  { id:"share-channel", cat:"Channels & Privacy", tags:["channels"], related:["private-channel","no-nodes"],
+    q:"How do I share a channel with my team?",
     a:"Meshtastic bundles your channel into a **QR code / URL**. Show the QR for others to scan in the app, or send them the URL. `--qr` shows your primary channel; `--qr-all` includes every channel.",
     cmd:"meshtastic --qr            # show primary channel QR\nmeshtastic --seturl \"<paste-channel-url>\"   # join from a URL" },
-  { cat:"Channels & Privacy", q:"How do I make a private channel with its own key?",
+  { id:"private-channel", cat:"Channels & Privacy", tags:["channels","security"], related:["encryption","share-channel"],
+    q:"How do I make a private channel with its own key?",
     a:"Generate a new random key on a channel and then share its QR/URL with only your group. The phone app has a one-tap \"generate\" button; from the CLI you set the PSK on a channel index (0 is primary).",
     cmd:"meshtastic --ch-set psk random --ch-index 0\nmeshtastic --qr" },
-  { cat:"Channels & Privacy", q:"What modem preset should I use, and does everyone need the same one?",
+  { id:"modem-preset", cat:"Channels & Privacy", tags:["channels","preset"], related:["atak-preset","no-nodes"],
+    q:"What modem preset should I use, and does everyone need the same one?",
     a:"The **modem preset** trades range for speed. **LongFast** (the default) gives the best range but is slow. **ShortFast** sends more data faster but reaches less far. **Everyone on the channel must use the same preset** or they won't hear each other. For ATAK, which sends frequent position updates, a faster preset often works better.",
     cmd:"meshtastic --ch-longfast     # max range (default)\nmeshtastic --ch-shortfast    # more throughput, less range" },
+  { id:"multiple-channels", cat:"Channels & Privacy", tags:["channels"], related:["what-is-channel"],
+    q:"Can I be on multiple channels at once?",
+    a:"Yes — a node can listen to **up to 8 channels** (index 0–7). Index **0 is primary** (used for most traffic). Secondary channels are handy for a private team net plus a public LongFast community channel. Each has its own name, key, and preset." },
 
   // ── Messaging & Location ──
-  { cat:"Messaging & Location", q:"How do I send a text message?",
+  { id:"send-text", cat:"Messaging & Location", tags:["messaging"], related:["node-id","share-channel"],
+    q:"How do I send a text message?",
     a:"Use the phone app's chat, or send straight from the CLI. By default it goes to **everyone** on the channel; add `--dest` with a node ID to message one person.",
     cmd:"meshtastic --sendtext \"Hello mesh!\"\nmeshtastic --dest '!a1b2c3d4' --sendtext \"just you\"" },
-  { cat:"Messaging & Location", q:"How do I share my location?",
+  { id:"share-location", cat:"Messaging & Location", tags:["gps","location"], related:["range-expectations","tak-tracker"],
+    q:"How do I share my location?",
     a:"A device with GPS broadcasts its position automatically, and it shows up as a marker in the app and in ATAK. No GPS? You can set a **fixed position** manually. You can also ask another node for its position.",
     cmd:"meshtastic --setlat 47.6062 --setlon -122.3321 --setalt 50\nmeshtastic --request-position --dest '!a1b2c3d4'" },
-  { cat:"Messaging & Location", q:"How far will it actually reach?",
+  { id:"range-expectations", cat:"Messaging & Location", tags:["range"], related:["antenna-basics","hop-limit"],
+    q:"How far will it actually reach?",
     a:"**Line of sight is everything.** Expect a few hundred metres between handhelds in a town, but several kilometres — sometimes much more — when one node is up high with a clear view. Messages also **hop** through other nodes to go further; the hop limit defaults to 3 and maxes out at 7.",
     cmd:"meshtastic --set lora.hop_limit 3   # default; 3 is plenty" },
-  { cat:"Messaging & Location", q:"How long does the battery last?",
+  { id:"hop-limit", cat:"Messaging & Location", tags:["mesh","range"], related:["mesh-how","router-role"],
+    q:"What is hop limit and when should I change it?",
+    a:"**Hop limit** caps how many times a packet can be relayed. Higher = farther reach but more airtime congestion. Default **3** is fine for most teams. Only raise it if you have a sparse network with well-placed routers and you're missing edge nodes.",
+    cmd:"meshtastic --set lora.hop_limit 3" },
+  { id:"battery-life", cat:"Messaging & Location", tags:["power"], related:["power-options","device-roles"],
+    q:"How long does the battery last?",
     a:"It depends on the board and role. A **CLIENT** node that sleeps between messages can last for days on a small battery. **Router/Tracker** roles transmit more and drain faster. Many people run nodes off a power bank, solar panel, or permanent USB power." },
+  { id:"node-id", cat:"Messaging & Location", tags:["messaging"], related:["send-text","list-nodes"],
+    q:"What is a node ID and where do I find it?",
+    a:"Every node has a unique ID like **!a1b2c3d4** — it's derived from the hardware. You need it for direct messages (`--dest`). Find it in the app, in `--info`, or in the `--nodes` table.",
+    cmd:"meshtastic --info | grep \"Node ID\"" },
 
   // ── ATAK Basics ──
-  { cat:"ATAK Basics", q:"How do I install ATAK?",
+  { id:"install-atak", cat:"ATAK Basics", tags:["atak","setup"], related:["callsign-team","ios-itak"],
+    q:"How do I install ATAK?",
     a:"Install **ATAK-CIV** (the civilian version) from the Google Play Store — it's Android only. On iPhone there's no ATAK plugin; iOS users run **iTAK** and connect through the Meshtastic iOS app's built-in TAK server instead (see the integration section)." },
-  { cat:"ATAK Basics", q:"How do I set my callsign and team?",
+  { id:"callsign-team", cat:"ATAK Basics", tags:["atak"], related:["install-atak","cot-marker"],
+    q:"How do I set my callsign and team?",
     a:"In ATAK, open **Settings → Identity / My Preferences** and set your **callsign**, **team colour**, and **role**. That's how you're labelled on everyone else's map, so pick something recognisable before you head out." },
-  { cat:"ATAK Basics", q:"Can ATAK work with offline maps?",
+  { id:"offline-maps", cat:"ATAK Basics", tags:["atak","maps"], related:["install-atak","field-checklist"],
+    q:"Can ATAK work with offline maps?",
     a:"Yes — that's a core feature. While you still have internet, **pre-download map tiles and data packages** for your area. Once cached, ATAK works fully offline in the field, which pairs perfectly with Meshtastic's off-grid networking." },
-  { cat:"ATAK Basics", q:"What is a CoT marker?",
+  { id:"cot-marker", cat:"ATAK Basics", tags:["atak","cot"], related:["integration-how","why-combine"],
+    q:"What is a CoT marker?",
     a:"**CoT = \"Cursor on Target\"**, the standard message format ATAK uses for positions, map markers, and chat. When you bridge to Meshtastic, it's these CoT messages that get packed up and carried over the LoRa radio to everyone else's ATAK." },
 
   // ── Meshtastic + ATAK ──
-  { cat:"Meshtastic + ATAK", q:"How does the Meshtastic ↔ ATAK integration actually work?",
+  { id:"integration-how", cat:"Meshtastic + ATAK", tags:["atak","integration"], related:["connect-atak-android","plugin-download"],
+    q:"How does the Meshtastic ↔ ATAK integration actually work?",
     a:"On Android, the **Meshtastic ATAK-Plugin** sits inside ATAK. It **intercepts ATAK's outgoing CoT messages** and hands them to the Meshtastic Android app, which transmits them over LoRa. Incoming mesh packets are turned back into map updates in ATAK. Note: the plugin only moves messages — it does **not** configure your radio; you still set up the radio in the Meshtastic app or CLI." },
-  { cat:"Meshtastic + ATAK", q:"Step by step: how do I connect ATAK to Meshtastic? (Android)",
+  { id:"connect-atak-android", cat:"Meshtastic + ATAK", tags:["atak","setup"], related:["tak-role","atak-icon-colour","plugin-download"],
+    q:"Step by step: how do I connect ATAK to Meshtastic? (Android)",
     a:"**1.** Get the Meshtastic app working on every device and confirm plain text messaging works between them. **2.** Set each node's **role to TAK**. **3.** Install the **ATAK-Plugin version that matches your ATAK version** (from the project's GitHub releases) on every phone. **4.** Keep the Meshtastic app running in the background, then launch ATAK — you should see a **green Meshtastic icon**.",
     cmd:"meshtastic --set device.role TAK" },
-  { cat:"Meshtastic + ATAK", q:"What's the difference between the TAK and TAK_TRACKER roles?",
+  { id:"tak-vs-tracker", cat:"Meshtastic + ATAK", tags:["atak","roles"], related:["device-roles","tak-tracker"],
+    q:"What's the difference between the TAK and TAK_TRACKER roles?",
     a:"**TAK** is for a node paired to a phone running ATAK — it quietens routine broadcasts to leave room for the stream of CoT messages coming from the plugin. **TAK_TRACKER** is for a GPS node with **no** phone attached: it sends its own position (PLI) onto the mesh by itself, making a simple location beacon your team can see in ATAK." },
-  { cat:"Meshtastic + ATAK", q:"What does the Meshtastic icon colour in ATAK mean?",
+  { id:"tak-tracker", cat:"Meshtastic + ATAK", tags:["atak","roles","gps"], related:["tak-vs-tracker","share-location"],
+    q:"How do I set up a standalone GPS tracker (no phone)?",
+    a:"Flash a GPS-capable board, set region, join the team channel, then set role to **TAK_TRACKER**. Mount it with a clear sky view. It will appear as a moving marker in ATAK on everyone's map without needing a phone attached.",
+    cmd:"meshtastic --set device.role TAK_TRACKER" },
+  { id:"atak-icon-colour", cat:"Meshtastic + ATAK", tags:["atak","troubleshooting"], related:["connect-atak-android","atak-no-positions"],
+    q:"What does the Meshtastic icon colour in ATAK mean?",
     a:"**Green** = the plugin is connected to the Meshtastic app and ready. **Red** = it couldn't connect — check that the Meshtastic app is running and working. **No icon at all** = the plugin isn't installed correctly (often a version mismatch with ATAK)." },
-  { cat:"Meshtastic + ATAK", q:"I'm on an iPhone — can I still use ATAK with Meshtastic?",
+  { id:"ios-itak", cat:"Meshtastic + ATAK", tags:["atak","ios"], related:["install-atak","integration-how"],
+    q:"I'm on an iPhone — can I still use ATAK with Meshtastic?",
     a:"The Android plugin won't run on iOS. Instead, the **Meshtastic iOS app has a built-in TAK Server** feature: turn it on, and point **iTAK** at that local server. The Meshtastic app then relays your CoT over LoRa, similar to the Android plugin.",
     note:"This feature evolves — confirm the exact steps in your current Meshtastic iOS app version." },
-  { cat:"Meshtastic + ATAK", q:"Which channel and preset settings work best for ATAK?",
+  { id:"atak-preset", cat:"Meshtastic + ATAK", tags:["atak","preset"], related:["modem-preset","atak-no-positions"],
+    q:"Which channel and preset settings work best for ATAK?",
     a:"Put **everyone on the same single Meshtastic channel**. Position updates can be chatty, so a **faster modem preset** (e.g. MediumFast or ShortFast) plus a sensible position interval keeps the airwaves from clogging. You trade some range for the extra throughput — tune it to your team's spread.",
     cmd:"meshtastic --ch-medfast      # faster than default, decent range" },
+  { id:"plugin-download", cat:"Meshtastic + ATAK", tags:["atak","plugin"], related:["connect-atak-android","atak-icon-colour"],
+    q:"Where do I download the ATAK plugin?",
+    a:"Get releases from the **Meshtastic ATAK Plugin GitHub** (linked from meshtastic.org/docs). **Match the plugin version to your installed ATAK version** — mismatches are the #1 cause of a missing or red icon. Install the APK on every Android device in the team." },
+  { id:"tak-role", cat:"Meshtastic + ATAK", tags:["atak","roles"], related:["connect-atak-android","device-roles"],
+    q:"How do I set the TAK role from CLI or app?",
+    a:"In the Meshtastic app: **Settings → Device Role → TAK**. From CLI:",
+    cmd:"meshtastic --set device.role TAK\nmeshtastic --reboot" },
+
+  // ── Field Operations ──
+  { id:"field-checklist", cat:"Field Operations", tags:["field"], related:["offline-maps","connect-atak-android"],
+    q:"What should I verify before leaving cell coverage?",
+    a:"Use the **Pre-field checklist** at the top of this page. At minimum: region set, shared channel, matching modem preset, antennas on, Meshtastic app shows teammates, offline maps cached, plugin version matched, and a test position received on someone else's ATAK." },
+  { id:"router-role", cat:"Field Operations", tags:["field","mesh"], related:["mesh-how","solar-router"],
+    q:"When should I deploy a fixed router node?",
+    a:"Place a **ROUTER** or **REPEATER** high up with clear views — hilltop, rooftop, tower. It extends the mesh for everyone else. Don't use ROUTER on a handheld you'll carry; it won't sleep and will drain battery fast. One well-placed router can double practical team range.",
+    cmd:"meshtastic --set device.role ROUTER" },
+  { id:"solar-router", cat:"Field Operations", tags:["field","power"], related:["router-role","power-options"],
+    q:"How do I run a solar-powered relay node?",
+    a:"A common pattern: **5 W solar panel → USB charge controller → 18650 or LiPo → T-Beam/Heltec in ROUTER role**, housed in a weatherproof box. Size the battery for 2–3 cloudy days. Test at home for a week before deploying remotely." },
+  { id:"team-coordination", cat:"Field Operations", tags:["field"], related:["share-channel","callsign-team"],
+    q:"How should a team coordinate channels and callsigns?",
+    a:"Before the event: pick **one private channel** (generate a fresh PSK), share the QR in person, agree on a **modem preset**, and set ATAK callsigns. During the event: designate one person as net control for channel changes. Document your channel URL in a second medium (paper, Signal) in case someone joins late." },
+  { id:"sar-emergency", cat:"Field Operations", tags:["field","emergency"], related:["why-combine","router-role"],
+    q:"Is this used for search & rescue or emergencies?",
+    a:"Yes — SAR teams and disaster-response groups use Meshtastic + ATAK when cell networks are down. **This is not a replacement for emergency services radio** (911, SAR dispatch). It's a team coordination tool. Always file a flight plan / trip plan with someone on-grid." },
+  { id:"ham-mode", cat:"Field Operations", tags:["field","legal"], related:["licence-fees","set-region"],
+    q:"What is Ham mode and should I use it?",
+    a:"Licensed amateur-radio operators can enable **Ham mode** for higher TX power and different duty-cycle rules in some regions. **Do not enable this without a valid licence.** Everyone on the channel must also be compliant with local Ham regulations.",
+    note:"Default ISM mode needs no licence and is right for most users." },
 
   // ── Troubleshooting ──
-  { cat:"Troubleshooting", q:"My Mac doesn't detect the device over USB — what now?",
+  { id:"mac-usb", cat:"Troubleshooting", tags:["usb"], related:["usb-cables","connect-node"],
+    q:"My Mac doesn't detect the device over USB — what now?",
     a:"Most boards use a **CP210x** or **CH9102/CH34x** USB-to-serial chip that needs a driver on macOS. Install the **Silicon Labs CP210x** or **WCH CH34x** driver, replug, and try again. Also make sure you're using a **data USB cable**, not a charge-only one.",
     cmd:"meshtastic --info   # should now connect" },
-  { cat:"Troubleshooting", q:"The radio won't transmit / nobody gets my messages.",
+  { id:"wont-transmit", cat:"Troubleshooting", tags:["region"], related:["set-region","no-nodes"],
+    q:"The radio won't transmit / nobody gets my messages.",
     a:"The most common cause is the **region isn't set** — the radio stays silent until it is. Set your region and reboot, then test again.",
     cmd:"meshtastic --set lora.region US\nmeshtastic --reboot" },
-  { cat:"Troubleshooting", q:"I can't see any other nodes.",
+  { id:"no-nodes", cat:"Troubleshooting", tags:["mesh"], related:["share-channel","modem-preset","antenna-basics"],
+    q:"I can't see any other nodes.",
     a:"For two radios to hear each other they must match on **three things**: same **region**, same **channel** (same name + key, easiest via a shared QR/URL), and same **modem preset**. Also check the **antenna is attached** (never transmit without one) and that you're within range.",
     cmd:"meshtastic --nodes   # list what you can currently hear" },
-  { cat:"Troubleshooting", q:"ATAK isn't receiving positions from the mesh.",
+  { id:"list-nodes", cat:"Troubleshooting", tags:["mesh"], related:["no-nodes","node-info"],
+    q:"How do I list who my node can hear right now?",
+    a:"The nodes table shows every device your radio has heard recently, with signal strength (SNR/RSSI) and last-heard time. If the table is empty, you're not hearing anyone — check region, channel, preset, and range.",
+    cmd:"meshtastic --nodes" },
+  { id:"atak-no-positions", cat:"Troubleshooting", tags:["atak"], related:["atak-icon-colour","tak-role","share-location"],
+    q:"ATAK isn't receiving positions from the mesh.",
     a:"Run through the checklist: Is the node's **role set to TAK**? Does the **plugin version match your ATAK version**? Is the **Meshtastic app running in the background** with a **green icon**? Is everyone on the **same channel**? And does the sending device actually have a **GPS lock / position sharing on**?" },
+  { id:"bluetooth-issues", cat:"Troubleshooting", tags:["bluetooth"], related:["connect-node"],
+    q:"Bluetooth won't pair between phone and node.",
+    a:"Toggle Bluetooth off/on on the phone. Force-close and reopen the Meshtastic app. Make sure no other phone is already connected to the node. On Android, grant **location permission** (required for BLE scan on many versions). Try `--ble-scan` from CLI to confirm the node is advertising." },
+  { id:"plugin-mismatch", cat:"Troubleshooting", tags:["atak","plugin"], related:["plugin-download","atak-icon-colour"],
+    q:"ATAK plugin installed but no Meshtastic icon appears.",
+    a:"Almost always a **version mismatch**. Check your ATAK version (About screen), then download the matching plugin release. Uninstall the old plugin APK first. Reboot the phone. Confirm the Meshtastic app works standalone before opening ATAK." },
+
+  // ── Glossary ──
+  { id:"glossary-psk", cat:"Glossary", tags:["glossary"],
+    q:"PSK (Pre-Shared Key)",
+    a:"The encryption password for a channel. Everyone with the same PSK can decrypt traffic on that channel. \"random\" generates a strong private key." },
+  { id:"glossary-cot", cat:"Glossary", tags:["glossary"],
+    q:"CoT (Cursor on Target)",
+    a:"XML-based message format used by ATAK/TAK for positions, markers, and chat. The Meshtastic bridge carries CoT over LoRa." },
+  { id:"glossary-pli", cat:"Glossary", tags:["glossary"],
+    q:"PLI (Position Location Information)",
+    a:"A CoT message type that reports where someone or something is. ATAK shows PLI as map markers." },
+  { id:"glossary-ism", cat:"Glossary", tags:["glossary"],
+    q:"ISM band",
+    a:"Industrial, Scientific, and Medical radio bands that don't require a licence (e.g. 915 MHz US, 868 MHz EU). Meshtastic's default mode." },
+  { id:"glossary-snr", cat:"Glossary", tags:["glossary"],
+    q:"SNR / RSSI",
+    a:"**SNR** = signal-to-noise ratio (higher is better). **RSSI** = received signal strength (closer to 0 dBm is stronger). Both appear in `--nodes` to judge link quality." },
+  { id:"glossary-airtime", cat:"Glossary", tags:["glossary"],
+    q:"Airtime / duty cycle",
+    a:"How much time the radio spends transmitting. LoRa regulations cap duty cycle in many regions. Chatty ATAK position updates consume airtime — tune preset and update interval accordingly." },
+  { id:"glossary-tak-server", cat:"Glossary", tags:["glossary"],
+    q:"TAK Server",
+    a:"A server that relays CoT between ATAK clients over the internet. Meshtastic replaces this link with LoRa mesh — no server needed." }
 ];
 
-/* ─────────────────────────────────────────────────────────────
-   Rendering, search, filtering, accordion, copy.
-   ───────────────────────────────────────────────────────────── */
-const state = { query:"", cat:"All" };
+/* ── State & DOM refs ── */
+const state = { query:"", cat:"All", focusIdx:-1 };
 const $ = (id) => document.getElementById(id);
 const results = $("results"), count = $("count"), chipsEl = $("chips");
+
+const entryById = Object.fromEntries(ENTRIES.map(e => [e.id, e]));
 
 function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 function bold(s){ return s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>"); }
 function highlight(html, q){
   if(!q) return html;
-  // Highlight outside of HTML tags only.
   const re = new RegExp("(" + q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&") + ")", "ig");
   return html.replace(/(<[^>]+>)|([^<]+)/g, (m, tag, text) =>
     tag ? tag : text.replace(re, "<mark>$1</mark>"));
 }
 function matches(e, q){
   if(!q) return true;
-  const hay = (e.q + " " + e.a + " " + e.cat + " " + (e.cmd||"") + " " + (e.note||"")).toLowerCase();
+  const hay = (e.q + " " + e.a + " " + e.cat + " " + (e.cmd||"") + (e.note||"") + " " + (e.tags||[]).join(" ")).toLowerCase();
   return hay.includes(q);
+}
+function filtered(){
+  const q = state.query.trim().toLowerCase();
+  return ENTRIES.filter(e => (state.cat === "All" || e.cat === state.cat) && matches(e, q));
+}
+
+function relatedHtml(entry){
+  if(!entry.related || !entry.related.length) return "";
+  const links = entry.related
+    .map(id => entryById[id])
+    .filter(Boolean)
+    .map(e => `<a href="#${e.id}" data-jump="${e.id}">${escapeHtml(e.q.length > 50 ? e.q.slice(0,47) + "…" : e.q)}</a>`)
+    .join("");
+  return links ? `<div class="related">Related: ${links}</div>` : "";
+}
+
+function renderEntry(e, open, q){
+  const qHtml   = highlight(bold(escapeHtml(e.q)), q);
+  const aHtml   = highlight(bold(escapeHtml(e.a)), q);
+  const cmdHtml = e.cmd ? `<div class="cmd"><button type="button" class="copy" data-cmd="${escapeHtml(e.cmd)}">Copy</button>${highlight(escapeHtml(e.cmd), q)}</div>` : "";
+  const noteHtml= e.note ? `<div class="note">${highlight(bold(escapeHtml(e.note)), q)}</div>` : "";
+  return `<article class="entry${open?' open':''}" id="${e.id}" data-id="${e.id}">
+    <div class="entry-head" role="button" tabindex="0" aria-expanded="${open}">
+      <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
+      <h3 class="q">${qHtml}</h3>
+      <span class="cat">${escapeHtml(e.cat)}</span>
+    </div>
+    <div class="entry-body"><p>${aHtml}</p>${cmdHtml}${noteHtml}${relatedHtml(e)}</div>
+  </article>`;
 }
 
 function buildChips(){
   const all = ["All", ...CATS];
   chipsEl.innerHTML = all.map(c => {
     const n = c === "All" ? ENTRIES.length : ENTRIES.filter(e => e.cat === c).length;
-    return `<button class="chip${c===state.cat?' active':''}" data-cat="${escapeHtml(c)}">${escapeHtml(c)}<span class="n">${n}</span></button>`;
+    return `<button type="button" class="chip${c===state.cat?' active':''}" data-cat="${escapeHtml(c)}">${escapeHtml(c)}<span class="n">${n}</span></button>`;
   }).join("");
   chipsEl.querySelectorAll(".chip").forEach(b =>
-    b.addEventListener("click", () => { state.cat = b.dataset.cat; buildChips(); render(); }));
+    b.addEventListener("click", () => { state.cat = b.dataset.cat; state.focusIdx = -1; buildChips(); render(); }));
 }
 
 function render(){
   const q = state.query.trim().toLowerCase();
-  const list = ENTRIES.filter(e => (state.cat === "All" || e.cat === state.cat) && matches(e, q));
+  const list = filtered();
+  const autoOpen = !!q;
 
   count.textContent = `${list.length} ${list.length === 1 ? "entry" : "entries"}`
     + (state.cat !== "All" ? ` · ${state.cat}` : "")
@@ -296,62 +636,248 @@ function render(){
     return;
   }
 
-  const open = !!q; // auto-expand when actively searching so answers are visible
-  results.innerHTML = list.map((e, i) => {
-    const qHtml   = highlight(bold(escapeHtml(e.q)), q);
-    const aHtml   = highlight(bold(escapeHtml(e.a)), q);
-    const cmdHtml = e.cmd ? `<div class="cmd"><button class="copy" data-cmd="${escapeHtml(e.cmd)}">Copy</button>${highlight(escapeHtml(e.cmd), q)}</div>` : "";
-    const noteHtml= e.note ? `<div class="note">${highlight(bold(escapeHtml(e.note)), q)}</div>` : "";
-    return `<div class="entry${open?' open':''}">
-      <div class="entry-head" role="button" tabindex="0" aria-expanded="${open}">
-        <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 6 15 12 9 18"/></svg>
-        <div class="q">${qHtml}</div>
-        <span class="cat">${escapeHtml(e.cat)}</span>
-      </div>
-      <div class="entry-body"><p>${aHtml}</p>${cmdHtml}${noteHtml}</div>
-    </div>`;
-  }).join("");
+  let html = "";
+  if(state.cat === "All" && !q){
+    CATS.forEach(cat => {
+      const group = list.filter(e => e.cat === cat);
+      if(!group.length) return;
+      html += `<div class="section-head" id="section-${cat.replace(/\s+/g,'-').toLowerCase()}"><h2>${escapeHtml(cat)}</h2><p>${escapeHtml(CAT_DESC[cat]||"")}</p></div>`;
+      html += group.map(e => renderEntry(e, false, q)).join("");
+    });
+  } else {
+    html = list.map(e => renderEntry(e, autoOpen, q)).join("");
+  }
+  results.innerHTML = html;
 
-  // Accordion toggles
+  wireEntries();
+  if(state.focusIdx >= 0 && state.focusIdx < list.length){
+    const el = results.querySelectorAll(".entry")[state.focusIdx];
+    if(el){ el.classList.add("open"); el.querySelector(".entry-head").setAttribute("aria-expanded","true"); }
+  }
+  applyHash();
+}
+
+function wireEntries(){
   results.querySelectorAll(".entry-head").forEach(h => {
-    const toggle = () => { const en = h.parentElement; en.classList.toggle("open"); h.setAttribute("aria-expanded", en.classList.contains("open")); };
+    const toggle = () => {
+      const en = h.parentElement;
+      en.classList.toggle("open");
+      h.setAttribute("aria-expanded", en.classList.contains("open"));
+      if(en.classList.contains("open")) history.replaceState(null, "", "#" + en.id);
+    };
     h.addEventListener("click", e => { if(!e.target.closest(".copy")) toggle(); });
     h.addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggle(); } });
   });
 
-  // Copy buttons
   results.querySelectorAll(".copy").forEach(btn => {
     btn.addEventListener("click", async (ev) => {
       ev.stopPropagation();
       const text = btn.dataset.cmd;
       try {
         if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(text); }
-        else { const ta = document.createElement("textarea"); ta.value = text; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); }
+        else { const ta = document.createElement("textarea"); ta.value = text; ta.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); }
         const old = btn.textContent; btn.textContent = "Copied ✓"; btn.classList.add("done");
         setTimeout(() => { btn.textContent = old; btn.classList.remove("done"); }, 1400);
-      } catch { btn.textContent = "Press ⌘C"; }
+      } catch { btn.textContent = "Failed"; }
+    });
+  });
+
+  results.querySelectorAll("[data-jump]").forEach(a => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      jumpToEntry(a.dataset.jump);
     });
   });
 }
 
-// Search wiring
+function jumpToEntry(id){
+  state.cat = "All";
+  state.query = "";
+  $("search").value = "";
+  $("clear").style.display = "none";
+  buildChips();
+  render();
+  requestAnimationFrame(() => {
+    const el = document.getElementById(id);
+    if(el){
+      el.classList.add("open");
+      el.querySelector(".entry-head").setAttribute("aria-expanded","true");
+      el.scrollIntoView({ behavior:"smooth", block:"start" });
+      history.replaceState(null, "", "#" + id);
+    }
+  });
+}
+
+function applyHash(){
+  const id = location.hash.slice(1);
+  if(!id) return;
+  const el = document.getElementById(id);
+  if(el && el.classList.contains("entry")){
+    el.classList.add("open");
+    el.querySelector(".entry-head").setAttribute("aria-expanded","true");
+  }
+}
+
+function buildQuickStart(){
+  $("quick-steps").innerHTML = QUICK_START.map((s, i) => `
+    <li>
+      <span class="num">${i+1}</span>
+      <span class="text">${bold(escapeHtml(s.step))}</span>
+      <button type="button" class="jump" data-jump="${s.id}">Details →</button>
+    </li>`).join("");
+  $("quick-steps").querySelectorAll("[data-jump]").forEach(b =>
+    b.addEventListener("click", () => jumpToEntry(b.dataset.jump)));
+}
+
+function buildToc(){
+  $("toc-grid").innerHTML = CATS.map(c => {
+    const n = ENTRIES.filter(e => e.cat === c).length;
+    return `<a class="toc-link" href="#" data-cat="${escapeHtml(c)}">${escapeHtml(c)}<span class="cnt">${n}</span></a>`;
+  }).join("");
+  $("toc-grid").querySelectorAll(".toc-link").forEach(a => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      state.cat = a.dataset.cat;
+      state.focusIdx = -1;
+      buildChips();
+      render();
+      $("results").scrollIntoView({ behavior:"smooth" });
+    });
+  });
+}
+
+function buildStats(){
+  const cmds = ENTRIES.filter(e => e.cmd).length;
+  $("stats").innerHTML = `
+    <div class="stat"><span class="n">${ENTRIES.length}</span><span class="l">Topics</span></div>
+    <div class="stat"><span class="n">${cmds}</span><span class="l">CLI commands</span></div>
+    <div class="stat"><span class="n">${CATS.length}</span><span class="l">Categories</span></div>`;
+}
+
+const CHECK_KEY = "mesh-atak-checklist";
+function buildChecklist(){
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(CHECK_KEY) || "{}"); } catch { /* ignore */ }
+  const ul = $("check-items");
+  ul.innerHTML = FIELD_CHECKLIST.map((item, i) => {
+    const done = !!saved[i];
+    return `<li class="${done?'done':''}" data-idx="${i}">
+      <input type="checkbox" id="chk-${i}" ${done?'checked':''} aria-label="${escapeHtml(item)}">
+      <label class="check-label" for="chk-${i}">${bold(escapeHtml(item))}</label>
+    </li>`;
+  }).join("");
+  function updateProgress(){
+    const boxes = ul.querySelectorAll("input");
+    const done = [...boxes].filter(b => b.checked).length;
+    $("check-progress").textContent = `${done} / ${boxes.length} complete`;
+  }
+  ul.querySelectorAll("li").forEach(li => {
+    li.addEventListener("click", (e) => {
+      if(e.target.tagName === "INPUT") return;
+      const cb = li.querySelector("input");
+      cb.checked = !cb.checked;
+      cb.dispatchEvent(new Event("change"));
+    });
+  });
+  ul.querySelectorAll("input").forEach(cb => {
+    cb.addEventListener("change", () => {
+      const idx = cb.closest("li").dataset.idx;
+      const li = cb.closest("li");
+      li.classList.toggle("done", cb.checked);
+      try {
+        const s = JSON.parse(localStorage.getItem(CHECK_KEY) || "{}");
+        s[idx] = cb.checked;
+        localStorage.setItem(CHECK_KEY, JSON.stringify(s));
+      } catch { /* ignore */ }
+      updateProgress();
+    });
+  });
+  updateProgress();
+}
+
+/* Search */
 const searchInput = $("search"), clearBtn = $("clear");
 searchInput.addEventListener("input", () => {
   state.query = searchInput.value;
+  state.focusIdx = -1;
   clearBtn.style.display = searchInput.value ? "inline" : "none";
   render();
 });
 clearBtn.addEventListener("click", () => { searchInput.value = ""; state.query = ""; clearBtn.style.display="none"; searchInput.focus(); render(); });
 
-// Keyboard: "/" focuses search, Esc clears/blurs
+$("expand-all").addEventListener("click", () => {
+  results.querySelectorAll(".entry").forEach(en => { en.classList.add("open"); en.querySelector(".entry-head").setAttribute("aria-expanded","true"); });
+});
+$("collapse-all").addEventListener("click", () => {
+  results.querySelectorAll(".entry").forEach(en => { en.classList.remove("open"); en.querySelector(".entry-head").setAttribute("aria-expanded","false"); });
+});
+$("show-toc").addEventListener("click", () => $("toc").scrollIntoView({ behavior:"smooth" }));
+
+/* Keyboard */
+const shortcutsPanel = $("shortcuts-panel");
+function openShortcuts(){ shortcutsPanel.classList.add("open"); }
+function closeShortcuts(){ shortcutsPanel.classList.remove("open"); }
+$("shortcuts-close").addEventListener("click", closeShortcuts);
+shortcutsPanel.addEventListener("click", (e) => { if(e.target === shortcutsPanel) closeShortcuts(); });
+
 document.addEventListener("keydown", (e) => {
+  if(e.key === "?" && document.activeElement !== searchInput){
+    e.preventDefault();
+    shortcutsPanel.classList.toggle("open");
+    return;
+  }
+  if(shortcutsPanel.classList.contains("open") && e.key === "Escape"){ closeShortcuts(); return; }
   if(e.key === "/" && document.activeElement !== searchInput){ e.preventDefault(); searchInput.focus(); }
   else if(e.key === "Escape" && document.activeElement === searchInput){
     if(searchInput.value){ searchInput.value=""; state.query=""; clearBtn.style.display="none"; render(); }
     else searchInput.blur();
   }
+  if(["ArrowDown","j"].includes(e.key) && document.activeElement !== searchInput){
+    e.preventDefault();
+    const list = filtered();
+    state.focusIdx = Math.min(state.focusIdx + 1, list.length - 1);
+    const entries = results.querySelectorAll(".entry");
+    entries.forEach((en, i) => en.style.outline = i === state.focusIdx ? "1px solid var(--accent)" : "");
+    if(entries[state.focusIdx]) entries[state.focusIdx].scrollIntoView({ block:"nearest" });
+  }
+  if(["ArrowUp","k"].includes(e.key) && document.activeElement !== searchInput){
+    e.preventDefault();
+    state.focusIdx = Math.max(state.focusIdx - 1, 0);
+    const entries = results.querySelectorAll(".entry");
+    entries.forEach((en, i) => en.style.outline = i === state.focusIdx ? "1px solid var(--accent)" : "");
+    if(entries[state.focusIdx]) entries[state.focusIdx].scrollIntoView({ block:"nearest" });
+  }
+  if(e.key === "Enter" && state.focusIdx >= 0 && document.activeElement !== searchInput){
+    const entries = results.querySelectorAll(".entry");
+    if(entries[state.focusIdx]) entries[state.focusIdx].querySelector(".entry-head").click();
+  }
 });
 
+window.addEventListener("hashchange", applyHash);
+
+/* PWA */
+let deferredPrompt;
+const installHint = $("install-hint");
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installHint.hidden = false;
+});
+$("install-btn").addEventListener("click", async () => {
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  installHint.hidden = true;
+});
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("/sw.js").catch(() => {});
+}
+
+buildStats();
+buildQuickStart();
+buildChecklist();
+buildToc();
 buildChips();
 render();
 </script>
