@@ -1,3 +1,8 @@
+<!-- BEGIN OHMS-GLOBAL (synced 2026-08-11; edit ~/AGENTS.md, not this block; re-sync replaces between markers) -->
+## Global agent contract
+Read `~/AGENTS.md` (Claude Code: same core in `~/.claude/CLAUDE.md`, auto-loaded) before working here. In force: questions are read-only; label options A/B/C; stop points are hard; problem-first writeups; `<model> via <harness>` trailer on commits/PRs; reports from real output (no template defaults); no parity claims without a diff; claims stated at the level verified (green tests are not evidence for a user-facing claim); verification runs once per unchanged tree; subagents return a verdict by ~20 tool calls / ~8 minutes; PID discipline (stop only what you started); disk budget (no deleting outside this repo/worktree; two ENOSPC strikes = stop and report); never mutate global system/tool config to pass a build; Silo invariants (MAS review-clean, Editorial Dark, ohmslaw.net privacy claims stay true); hit every surface before calling app work done. Repo-specific rules below override where they conflict.
+<!-- END OHMS-GLOBAL -->
+
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
