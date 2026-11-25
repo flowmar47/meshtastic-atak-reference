@@ -1,67 +1,46 @@
 # Meshtastic × ATAK — Field Reference
 
-A searchable, **offline-capable** knowledge base for configuring and using **Meshtastic** radios, the **ATAK** (Android Team Awareness Kit) app, and getting the two talking — so a team shares positions and chat over LoRa with no cell signal, no internet, and no fees.
+A searchable, **offline-capable** knowledge base and field toolkit for configuring **Meshtastic** radios, the **ATAK** (Android Team Awareness Kit) app, and bridging the two — so a team shares positions and chat over LoRa with no cell signal, no internet, and no fees.
 
 **Live:** https://meshtastic-atak-reference.vercel.app
 
 ## Features
 
-- **50+ topics** across 10 categories — Basics, Hardware, Setup, Channels, Messaging, ATAK, Integration, Field Ops, Troubleshooting, and Glossary
+- **65+ entries** across 10 categories — Basics, Hardware, Meshtastic Setup, Channels & Privacy, Messaging & Location, ATAK Basics, Meshtastic + ATAK, Field Operations, Troubleshooting, and Glossary
 - **Quick start guide** — five linked steps for your first hour
-- **Pre-field checklist** — tick items off before you leave coverage (saved in your browser)
-- **Live search** across every question, answer, tag, and CLI command (`/` to focus, `Esc` to clear)
-- **Category filters** and a topic index for browsing
-- **Deep links** — share a URL like `#set-region` to jump straight to an entry
-- **Related topics** on every entry for cross-navigation
-- **Keyboard navigation** — `↑`/`↓` or `j`/`k` to move, `Enter` to expand, `?` for shortcuts
-- **Expand / collapse all** for printing or scanning
-- **Copy-to-clipboard** CLI snippets
-- **PWA install** — add to home screen for offline access in the field
-- **Fully offline** — static files, no build step, no runtime dependencies
-- **Editorial Dark** visual theme
+- **Pre-field checklist** — tick items off before leaving coverage (saved in `localStorage`), jump straight to each guide entry, reset, or export a timestamped Markdown checklist
+- **Offline Field Tools** — LoRa modem preset comparison table, interactive **ATAK airtime & EU_868 duty-cycle estimator**, and an **offline CLI config builder** with cryptographic 256-bit Base64 PSK generation (`crypto.getRandomValues`)
+- **Multi-token live search** — matches across questions, answers, tags, and CLI commands (`/` to focus, `Esc` to clear, clickable `#tag` pills, URL query sync `?q=...&cat=...`)
+- **Deep links & Find-in-Page** — share URLs like `#set-region`, plus `hidden="until-found"` + `beforematch` support where browsers implement it
+- **Keyboard navigation & native `<dialog>`** — `↑`/`↓` or `j`/`k` across entries, `Enter`/`Space` to toggle, `?` for shortcuts
+- **Print-ready light theme** — `@media print` switches to crisp black-on-white formatting and keeps the pre-field checklist printable
+- **PWA install & offline support** — SVG + raster `192px` / `512px` / maskable icons, offline navigation fallback, and live online/offline indicator
+- **Zero-build static architecture** — opens directly from disk (`index.html`) with no bundler or runtime dependencies
 
 ## Use it locally
 
 Open `index.html` in any browser — no server required.
 
-For local development with PWA/service-worker support:
+For local development with PWA / service-worker support:
 
 ```bash
 npx serve .
 # or: python3 -m http.server 8080
 ```
 
-Then open `http://localhost:3000` (or `:8080`).
+## Validate
+
+```bash
+node --test tests/validate.test.mjs
+```
 
 ## Deploy to Vercel
 
-This repo is ready to deploy as a static site — no build command needed.
-
-### One-click
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/flowmar47/meshtastic-atak-reference)
-
-### From the CLI
-
-```bash
-npm i -g vercel
-vercel          # first deploy (follow prompts)
-vercel --prod   # production deploy
-```
-
-### Git integration
-
-1. Push this repo to GitHub.
-2. Import the project in the [Vercel dashboard](https://vercel.com/new).
-3. Leave **Framework Preset** as *Other* and **Build Command** empty.
-4. Set **Output Directory** to `.` (root).
-5. Deploy — every push to `master` will redeploy automatically.
-
-`vercel.json` configures clean URLs, security headers, and service-worker caching.
+This repo deploys as a static site with no build step (`vercel.json` configures clean URLs, security headers, and service-worker cache headers). Every push to `master` deploys automatically when linked to Vercel.
 
 ## Content accuracy
 
-Commands and values were verified against the [official Meshtastic docs](https://meshtastic.org/docs/) and the installed `meshtastic` CLI. Firmware and app versions change over time, so spot-check version-sensitive commands for your build.
+Commands and values were verified against the [official Meshtastic docs](https://meshtastic.org/docs/) and the `meshtastic` CLI (`network.wifi_enabled`, radio-wide `lora.modem_preset`, managed flooding relay, and `REPEATER` deprecation notes in 2.6+/2.7+). Firmware and app versions evolve over time, so spot-check version-sensitive commands for your build.
 
 ### Sources
 
@@ -73,4 +52,4 @@ Commands and values were verified against the [official Meshtastic docs](https:/
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).

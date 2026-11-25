@@ -1,7 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-  <rect width="512" height="512" fill="#0B0907"/>
-  <circle cx="256" cy="256" r="120" stroke="#D4A88A" stroke-width="16" fill="none"/>
-  <circle cx="256" cy="256" r="48" fill="#D4A88A"/>
-  <path d="M256 56 L256 136 M256 376 L256 456 M56 256 L136 256 M376 256 L456 256" stroke="#D4A88A" stroke-width="12" stroke-linecap="square"/>
-  <text x="256" y="280" text-anchor="middle" font-family="Georgia, serif" font-size="72" font-style="italic" fill="#ECE4D2">×</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Meshtastic ATAK Field Reference icon">
+  <rect width="512" height="512" rx="96" fill="#0B0907"/>
+  <rect x="28" y="28" width="456" height="456" rx="76" fill="#100D09" stroke="#D4A88A" stroke-width="10"/>
+  <circle cx="256" cy="256" r="144" fill="none" stroke="#D4A88A" stroke-width="14" stroke-opacity="0.35"/>
+  <path d="M180 180 L332 332 M332 180 L180 332" stroke="#ECE4D2" stroke-width="34" stroke-linecap="round"/>
+  <circle cx="256" cy="112" r="14" fill="#D4A88A"/>
+  <circle cx="400" cy="256" r="14" fill="#D4A88A"/>
+  <circle cx="256" cy="400" r="14" fill="#D4A88A"/>
+  <circle cx="112" cy="256" r="14" fill="#D4A88A"/>
 </svg>

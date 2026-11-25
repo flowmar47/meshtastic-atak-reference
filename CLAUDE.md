@@ -10,17 +10,20 @@ Default branch is `master`. Live at https://meshtastic-atak-reference.vercel.app
 
 ## Architecture
 
-Everything lives in **`index.html`** (~29 KB), which is fully self-contained: inline `<style>`, inline `<script>`, no runtime dependencies (web fonts degrade to system fonts). The visual theme is "Editorial Dark".
+Everything lives in **`index.html`**, which is fully self-contained: inline `<style>`, inline `<script>`, and zero build or runtime dependencies (web fonts degrade to system fonts). Supporting static files are `manifest.json`, `sw.js`, `vercel.json`, `icon.svg`, and the raster PWA icons (`icon-192.png`, `icon-512.png`, `icon-maskable-512.png`). The visual theme is "Editorial Dark" (with a light `@media print` override).
 
-The content model is a single JS array, `ENTRIES`, near the top of the `<script>` block. Each entry is an object:
+The content model lives near the top of the `<script>` block:
 
-- `cat` — one of the seven categories in the `CATS` array (`Basics`, `Meshtastic Setup`, `Channels & Privacy`, `Messaging & Location`, `ATAK Basics`, `Meshtastic + ATAK`, `Troubleshooting`). A new entry's `cat` MUST match a `CATS` string exactly or it won't get a filter chip.
-- `q` — the question / title (supports `**bold**`).
-- `a` — the answer (supports `**bold**`).
-- `cmd` — optional CLI snippet; rendered with a copy-to-clipboard button.
-- `note` — optional caveat line.
+- `CATS` & `CAT_DESC` — the 10 categories (`Basics`, `Hardware`, `Meshtastic Setup`, `Channels & Privacy`, `Messaging & Location`, `ATAK Basics`, `Meshtastic + ATAK`, `Field Operations`, `Troubleshooting`, `Glossary`). Every entry's `cat` MUST match a `CATS` string.
+- `QUICK_START` & `FIELD_CHECKLIST` — step/checklist items whose `id` fields must match real `ENTRIES` IDs.
+- `PRESETS` — LoRa modem preset metadata powering the comparison table and ATAK airtime estimator.
+- `ENTRIES` — knowledge base entries (`id`, `cat`, `tags`, `related`, `q`, `a`, optional `cmd`, optional `note`), supporting `**bold**` and `` `code` ``.
 
-Runtime behavior (all in the same `<script>`): `render()` filters `ENTRIES` by the current category chip and search query (`matches()` searches across `q + a + cat + cmd + note`), `buildChips()` renders the category filters with live counts, and `highlight()` wraps matched query text. Keyboard: `/` focuses search, `Esc` clears/blurs. To add or edit reference material, edit the `ENTRIES` array — do not introduce a build pipeline.
+Runtime behavior (all in the same `<script>`): multi-token AND search on markdown-stripped text, clickable `#tag` filters, URL query sync (`?q=...&cat=...`), native `<dialog id="shortcuts-dialog">`, `hidden="until-found"` + `beforematch` entry panels, `ResizeObserver` sticky offset tracking, offline CLI config builder, and checklist persistence/Markdown export. To validate changes before committing, run:
+
+```bash
+node --test tests/validate.test.mjs
+```
 
 ## Editing and deploying
 
