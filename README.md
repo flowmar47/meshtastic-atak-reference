@@ -1,5 +1,7 @@
 # Meshtastic × ATAK — Field Reference
 
+[![CI](https://github.com/flowmar47/meshtastic-atak-reference/actions/workflows/ci.yml/badge.svg)](https://github.com/flowmar47/meshtastic-atak-reference/actions/workflows/ci.yml) [![Live Demo](https://img.shields.io/badge/Demo-Live-brightgreen.svg)](https://meshtastic-atak-reference.vercel.app) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A searchable, **offline-capable** knowledge base and field toolkit for configuring **Meshtastic** radios, the **ATAK** (Android Team Awareness Kit) app, and bridging the two — so a team shares positions and chat over LoRa with no cell signal, no internet, and no fees.
 
 **Live:** https://meshtastic-atak-reference.vercel.app
